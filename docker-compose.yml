@@ -12,7 +12,7 @@ services:
     ports:
       - "127.0.0.1:${POSTGRES_PORT:-5432}:5432"  # Maps host port from env to container port 5432
     environment:
-      POSTGRES_USER: ${PG_USER
+      POSTGRES_USER: ${PG_USER}
       POSTGRES_PASSWORD: ${PG_PASS}
       POSTGRES_DB: ${PG_DB}
     user: "postgres:postgres"
