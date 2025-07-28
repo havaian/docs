@@ -2,14 +2,38 @@ services:
   redis:
     image: redis
     ports:
-      - "127.0.0.1:6379:6379"
+      - "127.0.0.1:${REDIS_PORT:-6379}:6379"  # Maps host port from env to container port 6379
     user: "redis:redis"
+    restart: unless-stopped
+
   postgres:
     image: postgres
     ports:
-      - "127.0.0.1:5432:5432"
+      - "127.0.0.1:${POSTGRES_PORT:-5432}:5432"  # Maps host port from env to container port 5432
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: pass
       POSTGRES_DB: outline
     user: "postgres:postgres"
+    restart: unless-stopped
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  outline:
+    build: .
+    ports:
+      - "${PORT:-8080}:${PORT:-8080}"  # Maps host port to container port using env variable
+    depends_on:
+      - postgres
+      - redis
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=production
+    volumes:
+      - outline_data:/var/lib/outline/data
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  outline_data:
